@@ -1,0 +1,46 @@
+{
+  "name": "Hacker News Headline Viewer",
+  "description": "This tool can be used to visit hacker news webpage and extract ALL headlines and links from the page that have to do with a particular topic.\nAvailable options for `page`:\n(empty) - front page\n\"newest\" - newest posts page\nExamples of how to use this flow:\n\"Find AI-related posts on HackerNews\"\n\"Show me political discussions from the newest HackerNews posts\"\nThe flow will return relevant articles as clickable markdown links.",
+  "steps": [
+    {
+      "type": "start",
+      "config": {
+        "variables": [
+          {
+            "name": "hackerNewsURLPath",
+            "value": ""
+          },
+          {
+            "name": "topicOfInterest",
+            "value": "Political discussions or items"
+          },
+          {
+            "name": "pageContentFromSite",
+            "value": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "webScraping",
+      "config": {
+        "url": "https://news.ycombinator.com/${hackerNewsURLPath}",
+        "captureAs": "text",
+        "querySelector": "",
+        "resultVariable": "pageContentFromSite",
+        "enableSummarization": false
+      }
+    },
+    {
+      "type": "llmInstruction",
+      "config": {
+        "instruction": "Extract all links from this content that would be relevant to this topic: ${topicOfInterest}\nContent:\n${pageContentFromSite}\nFormat your response as a list of markdown links, with a brief description of why each link is relevant.\nIf no relevant links are found, say \"No relevant articles found.\"",
+        "inputVariable": "pageContentFromSite",
+        "resultVariable": ""
+      }
+    }
+  ],
+  "tags": [],
+  "visibility": "private",
+  "active": true
+}

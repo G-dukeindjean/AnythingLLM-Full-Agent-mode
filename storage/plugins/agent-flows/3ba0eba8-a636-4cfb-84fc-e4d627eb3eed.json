@@ -1,0 +1,46 @@
+{
+  "name": "Website Summarizer",
+  "description": "Scrape a single webpage and return a concise JSON summary with title (if present in text), key points, and detected entities. Input variable: url (string). Example calls: \"summarize https://example.com\", \"scrape and summarize ${url}\".",
+  "steps": [
+    {
+      "type": "start",
+      "config": {
+        "variables": [
+          {
+            "name": "${url}",
+            "value": ""
+          },
+          {
+            "name": "page_text",
+            "value": ""
+          },
+          {
+            "name": "json_summary",
+            "value": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "webScraping",
+      "config": {
+        "url": "${url}",
+        "captureAs": "text",
+        "querySelector": "",
+        "resultVariable": "page_text",
+        "directOutput": false
+      }
+    },
+    {
+      "type": "llmInstruction",
+      "config": {
+        "instruction": "You are a precise web-page analyzer. Given the scraped TEXT for a single URL,\nproduce ONLY valid, minified JSON with this schema:\n\n{\n  \"url\": string,\n  \"title\": string|null,\n  \"summary\": string,                   // 3–5 sentences\n  \"key_points\": string[],              // 5–10 short bullets\n  \"entities\": string[],                // people/companies/products/orgs\n  \"sections\": [{\"heading\": string, \"details\": string}] // if headings present\n}\n\nRules:\n- Use the TEXT as ground truth; do not invent facts.\n- If a field is unknown, set it to null or [] appropriately.\n- Keep it compact (no extra whitespace outside strings).\n\nInput:\nURL: ${url}\nTEXT:\n{{page_text}}\n",
+        "resultVariable": "json_summary",
+        "directOutput": false
+      }
+    }
+  ],
+  "tags": [],
+  "visibility": "private",
+  "active": true
+}
